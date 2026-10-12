@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:PcMeter.App"
+        x:Class="PcMeter.App.MainWindow"
+        x:DataType="local:MainWindow"
+        Title="PcMeter"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        SystemDecorations="None"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        ShowInTaskbar="False"
+        WindowStartupLocation="Manual">
+
+  <Window.ContextMenu>
+    <ContextMenu>
+      <MenuItem Header="Hide to tray" Click="OnHide" />
+      <MenuItem Header="Exit" Click="OnExit" />
+    </ContextMenu>
+  </Window.ContextMenu>
+
+  <ItemsControl x:Name="DialList" ItemsSource="{Binding Dials}" Margin="4">
+    <ItemsControl.ItemTemplate>
+      <DataTemplate x:DataType="local:DialViewModel">
+        <local:DialControl Fraction="{Binding Fraction}"
+                           ValueText="{Binding ValueText}"
+                           Label="{Binding Label}"
+                           ToolTip.Tip="{Binding Detail}" />
+      </DataTemplate>
+    </ItemsControl.ItemTemplate>
+  </ItemsControl>
+</Window>
