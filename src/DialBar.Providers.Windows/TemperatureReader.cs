@@ -19,7 +19,7 @@ public sealed class TemperatureReader : IDisposable
         {
             try
             {
-                _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true, IsStorageEnabled = true };
+                _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true, IsStorageEnabled = true, IsMotherboardEnabled = true };
                 _computer.Open();
             }
             catch
@@ -31,10 +31,15 @@ public sealed class TemperatureReader : IDisposable
 
         if (_computer is null) return null;
 
-        double? cpu = null, gpu = null, disk = null;
+        double? cpu = null, gpu = null, disk = null, cpuFan = null, gpuFan = null;
         foreach (var hardware in _computer.Hardware)
         {
             hardware.Update();
+            if (hardware.HardwareType == HardwareType.Motherboard)
+                cpuFan = Max(cpuFan, FastestFan(hardware, cpuOnly: true));
+            else if (hardware.HardwareType is HardwareType.GpuNvidia or HardwareType.GpuAmd or HardwareType.GpuIntel)
+                gpuFan = Max(gpuFan, FastestFan(hardware, cpuOnly: false));
+
             var hottest = HottestTemperature(hardware);
             if (hottest is null) continue;
 
@@ -45,7 +50,7 @@ public sealed class TemperatureReader : IDisposable
                 case HardwareType.Storage: disk = Max(disk, hottest); break;
             }
         }
-        return new TemperatureSnapshot(cpu, gpu, disk);
+        return new TemperatureSnapshot(cpu, gpu, disk, cpuFan, gpuFan);
     }
 
     private static double? HottestTemperature(IHardware hardware)
@@ -63,6 +68,25 @@ public sealed class TemperatureReader : IDisposable
         {
             sub.Update();
             best = Max(best, HottestTemperature(sub));
+        }
+        return best;
+    }
+
+    /// <summary>Fastest fan (RPM). On the motherboard only fans named for the CPU count, so case fans don't show as CPU.</summary>
+    private static double? FastestFan(IHardware hardware, bool cpuOnly)
+    {
+        double? best = null;
+        foreach (var sensor in hardware.Sensors)
+        {
+            if (sensor.SensorType != SensorType.Fan || sensor.Value is not { } value) continue;
+            if (cpuOnly && !sensor.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase)) continue;
+            best = Max(best, value);
+        }
+
+        foreach (var sub in hardware.SubHardware)
+        {
+            sub.Update();
+            best = Max(best, FastestFan(sub, cpuOnly));
         }
         return best;
     }

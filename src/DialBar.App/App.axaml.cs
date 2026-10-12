@@ -16,6 +16,7 @@ public sealed class App : Application
         (MetricKind.Disk, "Disk"),
         (MetricKind.Network, "Network"),
         (MetricKind.Gpu, "GPU"),
+        (MetricKind.Fan, "Fans"),
     ];
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);

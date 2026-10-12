@@ -13,6 +13,7 @@ public static class WindowsProviders
         Create(MetricKind.Disk, () => new DiskProvider()),
         Create(MetricKind.Network, () => new NetworkProvider()),
         Create(MetricKind.Gpu, () => new GpuProvider()),
+        Create(MetricKind.Fan, () => new FanProvider()),
     ];
 
     private static IMetricProvider Create(MetricKind kind, Func<IMetricProvider> factory)

@@ -8,6 +8,7 @@ public enum MetricKind
     Disk,
     Network,
     Gpu,
+    Fan,
 }
 
 /// <summary>

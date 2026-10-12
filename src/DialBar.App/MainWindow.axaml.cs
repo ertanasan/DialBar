@@ -19,6 +19,7 @@ public sealed partial class MainWindow : Avalonia.Controls.Window
         (MetricKind.Disk, "DISK"),
         (MetricKind.Network, "NET"),
         (MetricKind.Gpu, "GPU"),
+        (MetricKind.Fan, "FAN"),
     ];
 
     private readonly AppSettings _settings = SettingsStore.Load();
