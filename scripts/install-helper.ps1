@@ -37,7 +37,9 @@ if ($Uninstall) {
     return
 }
 
-$project = Join-Path $PSScriptRoot '..\src\DialBar.Helper\DialBar.Helper.csproj'
+$scriptDir = if ($PSScriptRoot) { $PSScriptRoot } elseif ($MyInvocation.MyCommand.Path) { Split-Path $MyInvocation.MyCommand.Path } else { $null }
+if (-not $scriptDir) { throw 'Cannot locate the script folder. Run it from a file (.\scripts\install-helper.ps1), not pasted into the console.' }
+$project = Join-Path $scriptDir '..\src\DialBar.Helper\DialBar.Helper.csproj'
 dotnet publish $project -c Release -r win-x64 --self-contained -o $target
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed' }
 
