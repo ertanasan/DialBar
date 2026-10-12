@@ -74,8 +74,9 @@ public sealed class App : Application
             };
             item.Click += (_, _) =>
             {
-                item.IsChecked = !item.IsChecked;
-                window.SetGaugeShown(kind, item.IsChecked);
+                var shown = !window.IsGaugeShown(kind);
+                item.IsChecked = shown;
+                window.SetGaugeShown(kind, shown);
             };
             menu.Add(item);
         }
@@ -85,16 +86,18 @@ public sealed class App : Application
         var topmost = new NativeMenuItem("Always on top") { ToggleType = NativeMenuItemToggleType.CheckBox, IsChecked = window.Topmost };
         topmost.Click += (_, _) =>
         {
-            topmost.IsChecked = !topmost.IsChecked;
-            window.SetAlwaysOnTop(topmost.IsChecked);
+            var value = !window.Topmost;
+            topmost.IsChecked = value;
+            window.SetAlwaysOnTop(value);
         };
         menu.Add(topmost);
 
         var vertical = new NativeMenuItem("Vertical layout") { ToggleType = NativeMenuItemToggleType.CheckBox, IsChecked = window.IsVertical };
         vertical.Click += (_, _) =>
         {
-            vertical.IsChecked = !vertical.IsChecked;
-            window.SetVertical(vertical.IsChecked);
+            var value = !window.IsVertical;
+            vertical.IsChecked = value;
+            window.SetVertical(value);
         };
         menu.Add(vertical);
 
