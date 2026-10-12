@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DialBar.App.AboutWindow"
+        Title="About DialBar"
+        Width="360"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen">
+
+  <StackPanel Margin="24" Spacing="6">
+    <TextBlock Text="DialBar" FontSize="26" FontWeight="SemiBold" />
+    <TextBlock x:Name="VersionText" Opacity="0.7" />
+    <TextBlock Text="Floating circular gauges for CPU, heat, memory, disk, network and GPU."
+               TextWrapping="Wrap" Margin="0,8,0,8" />
+
+    <TextBlock Text="© 2026 Ertan Asan" FontWeight="SemiBold" />
+    <TextBlock Text="@ertanasan" Opacity="0.7" />
+
+    <TextBlock Text="Built with Avalonia (MIT) and LibreHardwareMonitor (MPL-2.0)."
+               Opacity="0.6" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0" />
+
+    <Button Content="Close" HorizontalAlignment="Right" Margin="0,12,0,0" Click="OnClose" />
+  </StackPanel>
+</Window>

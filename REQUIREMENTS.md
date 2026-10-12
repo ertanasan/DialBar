@@ -1,9 +1,9 @@
-# PcMeter – Requirements
+# DialBar – Requirements
 
 Status: Draft v0.2 (assumptions marked **[A]**, open questions in section 10)
 
 ## 1. Purpose
-PcMeter is a lightweight, cross-platform desktop utility that shows live system health as a single floating bar of circular gauges, so the user can spot load, heat, and bottlenecks without opening a system monitor.
+DialBar is a lightweight, cross-platform desktop utility that shows live system health as a single floating bar of circular gauges, so the user can spot load, heat, and bottlenecks without opening a system monitor.
 
 ## 2. Scope
 In scope: one floating bar with circular dial gauges for CPU, heat, memory, disk, network, and GPU.
@@ -52,7 +52,7 @@ Requirements for all gauges:
 
 ## 7. Settings & Persistence
 - ST-1: Settings UI: update interval, thresholds, theme (light/dark/accent), opacity, size, orientation, units (°C/°F), heat source, startup.
-- ST-2: JSON settings in the per-OS app-data folder (`%APPDATA%\PcMeter`, `~/.config/PcMeter`, `~/Library/Application Support/PcMeter`); corrupt/missing file falls back to defaults.
+- ST-2: JSON settings in the per-OS app-data folder (`%APPDATA%\DialBar`, `~/.config/DialBar`, `~/Library/Application Support/DialBar`); corrupt/missing file falls back to defaults.
 - ST-3: Reset-to-defaults option.
 
 ## 8. Non-Functional Requirements
@@ -70,7 +70,7 @@ Requirements for all gauges:
 ## 9. Technical Approach **[A]**
 - Language/runtime: C# on .NET 8.
 - UI: Avalonia UI (cross-platform, transparent borderless windows, custom-drawn arcs). WPF is Windows-only, so it is not used.
-- Architecture: `PcMeter.Core` (metric interfaces, models, settings) + per-OS metric providers behind `IMetricProvider`, + `PcMeter.App` (Avalonia UI). This keeps the UI identical across OSes.
+- Architecture: `DialBar.Core` (metric interfaces, models, settings) + per-OS metric providers behind `IMetricProvider`, + `DialBar.App` (Avalonia UI). This keeps the UI identical across OSes.
 - Metric sources:
   - Windows: Performance counters (PDH) for CPU/disk/network, `GlobalMemoryStatusEx` for memory, LibreHardwareMonitorLib for temperatures.
   - Linux: `/proc/stat`, `/proc/meminfo`, `/proc/diskstats`, `/proc/net/dev`, `/sys/class/hwmon` for temperatures.

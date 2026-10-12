@@ -1,8 +1,8 @@
-# PcMeter
+# DialBar
 
 A small, always-on-top bar of circular gauges that shows your PC's health at a glance: **CPU, heat, memory, disk, network and GPU**. No window to open, no graphs to read: just six dials that turn green, amber or red.
 
-![PcMeter horizontal bar](docs/images/bar-horizontal.png)
+![DialBar horizontal bar](docs/images/bar-horizontal.png)
 
 ## Features
 
@@ -28,21 +28,21 @@ A small, always-on-top bar of circular gauges that shows your PC's health at a g
 
 - Windows 10 or 11 (x64)
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) to build from source
-- **Administrator rights**: PcMeter asks for them at launch (UAC) so it can read temperature sensors
+- **Administrator rights**: DialBar asks for them at launch (UAC) so it can read temperature sensors
 - For **CPU temperature**: the [PawnIO](https://pawnio.eu) driver. Without it the Heat dial still works from the sensors that don't need it (typically disk and GPU), and the tooltip tells you what is missing.
 
 ## Build and run
 
 ```powershell
 git clone <this repository>
-cd PcMeter
+cd DialBar
 dotnet build
 ```
 
-PcMeter requests administrator rights, so start it from an **elevated** PowerShell, or run the built exe and accept the UAC prompt:
+DialBar requests administrator rights, so start it from an **elevated** PowerShell, or run the built exe and accept the UAC prompt:
 
 ```powershell
-src\PcMeter.App\bin\Debug\net8.0-windows\PcMeter.App.exe
+src\DialBar.App\bin\Debug\net8.0-windows\DialBar.App.exe
 ```
 
 > **Behind a corporate proxy or private NuGet feed?** If restore fails, make sure nuget.org is enabled (`dotnet nuget enable source nuget.org`). The repo's `nuget.config` uses nuget.org only.
@@ -59,7 +59,7 @@ src\PcMeter.App\bin\Debug\net8.0-windows\PcMeter.App.exe
 | Always on top | Tray menu, **Always on top** |
 | Hide to tray or exit | Right-click the bar |
 
-Settings are saved to `%APPDATA%\PcMeter\settings.json`. Delete the file to reset everything.
+Settings are saved to `%APPDATA%\DialBar\settings.json`. Delete the file to reset everything.
 
 ## How temperatures work
 
@@ -72,7 +72,7 @@ The Heat dial shows the **hottest** of the sources it can read, and the tooltip 
 
 ### Optional: sensor helper service
 
-`src/PcMeter.Helper` is a small Windows service that reads the same sensors as SYSTEM and shares them with the app over a local-only named pipe (network access is denied). It is intended for running the UI **without** elevation; the app reads from it automatically when it is installed.
+`src/DialBar.Helper` is a small Windows service that reads the same sensors as SYSTEM and shares them with the app over a local-only named pipe (network access is denied). It is intended for running the UI **without** elevation; the app reads from it automatically when it is installed.
 
 ```powershell
 # elevated PowerShell
@@ -84,10 +84,10 @@ The Heat dial shows the **hottest** of the sources it can read, and the tooltip 
 
 ```
 src/
-  PcMeter.Core/                 gauge models, sampler, settings (no OS code)
-  PcMeter.Providers.Windows/    CPU, memory, disk, network, GPU, heat providers
-  PcMeter.Helper/               optional elevated sensor service
-  PcMeter.App/                  Avalonia UI: floating bar, dials, tray, About
+  DialBar.Core/                 gauge models, sampler, settings (no OS code)
+  DialBar.Providers.Windows/    CPU, memory, disk, network, GPU, heat providers
+  DialBar.Helper/               optional elevated sensor service
+  DialBar.App/                  Avalonia UI: floating bar, dials, tray, About
 scripts/                        helper install script
 docs/images/                    screenshots
 REQUIREMENTS.md                 full requirements and roadmap
