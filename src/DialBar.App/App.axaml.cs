@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using DialBar.Core;
 
 namespace DialBar.App;
@@ -30,7 +31,7 @@ public sealed class App : Application
 
             var tray = new TrayIcon
             {
-                Icon = TrayIconFactory.Create(),
+                Icon = new WindowIcon(AssetLoader.Open(new Uri("avares://DialBar.App/Assets/DialBar.ico"))),
                 ToolTipText = "DialBar",
                 Menu = BuildMenu(window, desktop),
             };
@@ -100,6 +101,15 @@ public sealed class App : Application
             window.SetVertical(value);
         };
         menu.Add(vertical);
+
+        var startup = new NativeMenuItem("Start with Windows") { ToggleType = NativeMenuItemToggleType.CheckBox, IsChecked = StartupRegistration.IsEnabled };
+        startup.Click += (_, _) =>
+        {
+            var value = !StartupRegistration.IsEnabled;
+            StartupRegistration.SetEnabled(value);
+            startup.IsChecked = value;
+        };
+        menu.Add(startup);
 
         menu.Add(new NativeMenuItemSeparator());
 

@@ -21,29 +21,45 @@ A small, always-on-top bar of circular gauges that shows your PC's health at a g
   ![Vertical bar](docs/images/bar-vertical.png)
 
 - **Drag anywhere** to move it. The position is remembered, and ignored if that spot is no longer on a screen.
-- **Tray icon**: show or hide the bar, toggle individual gauges, always-on-top, layout, About, Exit.
+- **Tray icon**: show or hide the bar, toggle individual gauges, always-on-top, layout, start with Windows, About, Exit.
 - **Private**: no network access, no telemetry. Everything stays on your machine.
 
 ## Requirements
 
 - Windows 10 or 11 (x64)
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) to build from source
-- **Administrator rights**: DialBar asks for them at launch (UAC) so it can read temperature sensors
 - For **CPU temperature**: the [PawnIO](https://pawnio.eu) driver. Without it the Heat dial still works from the sensors that don't need it (typically disk and GPU), and the tooltip tells you what is missing.
 
-## Build and run
+## Install
+
+Run `DialBar-Setup-<version>.exe` (asks for administrator rights once). It installs to `C:\Program Files\DialBar`:
+
+- the **DialBar app**, with Start menu and (optional) desktop shortcuts
+- the **sensor helper service** (`DialBar Sensor Helper`), started right away and on every boot
+
+The app itself runs as a normal user, with no UAC prompt. Uninstall from **Settings > Apps**; this also removes the service.
+
+To start DialBar when you sign in, tick **Start with Windows** in the tray menu.
+
+### Building the setup
+
+Needs [Inno Setup](https://jrsoftware.org/isinfo.php) 6.3+ (`winget install JRSoftware.InnoSetup`).
+
+```powershell
+.\scripts\package.ps1                 # dist\DialBar-Setup-0.1.0.exe
+.\scripts\package.ps1 -Version 0.2.0
+```
+
+## Build and run from source
 
 ```powershell
 git clone <this repository>
 cd DialBar
-dotnet build
-```
-
-DialBar requests administrator rights, so start it from an **elevated** PowerShell, or run the built exe and accept the UAC prompt:
-
-```powershell
+.\scripts\build.ps1
 src\DialBar.App\bin\Debug\net8.0-windows\DialBar.App.exe
 ```
+
+Without the helper service, CPU and disk temperatures need administrator rights: run the exe from an elevated PowerShell, or install the service (see below).
 
 > **Behind a corporate proxy or private NuGet feed?** If restore fails, make sure nuget.org is enabled (`dotnet nuget enable source nuget.org`). The repo's `nuget.config` uses nuget.org only.
 
@@ -57,6 +73,7 @@ src\DialBar.App\bin\Debug\net8.0-windows\DialBar.App.exe
 | Hide a single gauge | Tray menu, untick the gauge |
 | Vertical layout | Tray menu, **Vertical layout** |
 | Always on top | Tray menu, **Always on top** |
+| Start when you sign in | Tray menu, **Start with Windows** |
 | Hide to tray or exit | Right-click the bar |
 
 Settings are saved to `%APPDATA%\DialBar\settings.json`. Delete the file to reset everything.
@@ -65,14 +82,16 @@ Settings are saved to `%APPDATA%\DialBar\settings.json`. Delete the file to rese
 
 | Source | Needs |
 | --- | --- |
-| GPU, disk (SMART / NVMe) | Administrator rights |
-| CPU | Administrator rights **and** the PawnIO driver |
+| GPU, disk (SMART / NVMe) | The helper service, or administrator rights |
+| CPU | The helper service (or administrator rights) **and** the PawnIO driver |
 
 The Heat dial shows the **hottest** of the sources it can read, and the tooltip lists each one.
 
-### Optional: sensor helper service
+### Sensor helper service
 
-`src/DialBar.Helper` is a small Windows service that reads the same sensors as SYSTEM and shares them with the app over a local-only named pipe (network access is denied). It is intended for running the UI **without** elevation; the app reads from it automatically when it is installed.
+`src/DialBar.Helper` is a small Windows service that reads the sensors as SYSTEM and shares them with the app over a local-only named pipe (network access is denied). This is what lets the app run without elevation. The setup installs it; the app reads from it automatically. Don't start `DialBar.Helper.exe` yourself: the service already runs it.
+
+For development, you can install just the service from your local build:
 
 ```powershell
 # elevated PowerShell
@@ -86,9 +105,10 @@ The Heat dial shows the **hottest** of the sources it can read, and the tooltip 
 src/
   DialBar.Core/                 gauge models, sampler, settings (no OS code)
   DialBar.Providers.Windows/    CPU, memory, disk, network, GPU, heat providers
-  DialBar.Helper/               optional elevated sensor service
+  DialBar.Helper/               elevated sensor service
   DialBar.App/                  Avalonia UI: floating bar, dials, tray, About
-scripts/                        helper install script
+installer/                      Inno Setup script
+scripts/                        build, package and helper install scripts
 docs/images/                    screenshots
 REQUIREMENTS.md                 full requirements and roadmap
 ```
@@ -98,8 +118,8 @@ The metric code sits behind an `IMetricProvider` interface and the UI is [Avalon
 ## Roadmap
 
 - Settings window (refresh interval, thresholds, size, opacity, °C / °F)
-- Global show/hide hotkey, start with Windows, click-through mode
-- MSI installer
+- Global show/hide hotkey, click-through mode
+- Signed installer
 - Linux and macOS support
 
 See [REQUIREMENTS.md](REQUIREMENTS.md) for the full list.

@@ -89,7 +89,7 @@ Requirements for all gauges:
   - The helper exposes read-only sensor data over a local named pipe, restricted to the interactive user.
 
 ## 10a. Open Questions
-1. Installer technology: MSIX (needs signing, simple updates) or MSI/Inno Setup (supports the service install more easily)?
+1. ~~Installer technology~~: decided, Inno Setup (`installer/DialBar.iss`): one setup installs the app and the helper service.
 2. Code-signing certificate: do you have one, or should the plan include getting one?
 3. Licensing of the sensor library (LibreHardwareMonitor is MPL-2.0) is acceptable for distribution?
 4. Auto-update needed in v1?
