@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
   Installs (or removes) the DialBar sensor helper as a Windows service. Run from an elevated PowerShell.
-  Dev convenience only; the MSI installer replaces this in the packaging milestone.
+  Dev convenience only; end users get the service from the setup built by package.ps1.
 .EXAMPLE
   .\install-helper.ps1            # publish, install and start
   .\install-helper.ps1 -Uninstall # stop and remove

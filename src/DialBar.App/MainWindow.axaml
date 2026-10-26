@@ -4,6 +4,7 @@
         x:Class="DialBar.App.MainWindow"
         x:DataType="local:MainWindow"
         Title="DialBar"
+        Icon="/Assets/DialBar.ico"
         SizeToContent="WidthAndHeight"
         CanResize="False"
         SystemDecorations="None"
