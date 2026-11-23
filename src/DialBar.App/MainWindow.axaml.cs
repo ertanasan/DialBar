@@ -43,7 +43,15 @@ public sealed partial class MainWindow : Avalonia.Controls.Window
 
         _saveTimer.Tick += (_, _) => { _saveTimer.Stop(); SaveSettings(); };
         PositionChanged += (_, _) => { _saveTimer.Stop(); _saveTimer.Start(); };
-        Opened += (_, _) => { RestorePosition(); _sampler.Start(); };
+        // Restore before the window is first shown, and again once opened in case the platform repositioned it
+        // (SizeToContent layout can move a window that started at the default location).
+        RestorePosition();
+        Opened += (_, _) =>
+        {
+            RestorePosition();
+            Dispatcher.UIThread.Post(RestorePosition, DispatcherPriority.Background);
+            _sampler.Start();
+        };
         Closed += (_, _) => { SaveSettings(); _sampler.Dispose(); };
     }
 
@@ -108,8 +116,10 @@ public sealed partial class MainWindow : Avalonia.Controls.Window
         if (_settings.Left is not { } left || _settings.Top is not { } top) return;
 
         // Ignore a saved position that is no longer on any screen (monitor unplugged, resolution changed).
+        // Screens can be unavailable before the window is shown; in that case trust the saved value.
         var point = new PixelPoint(left, top);
-        if (Screens.All.Any(s => s.WorkingArea.Contains(point)))
+        var screens = Screens?.All;
+        if (screens is null || screens.Count == 0 || screens.Any(s => s.Bounds.Contains(point)))
             Position = point;
     }
 
